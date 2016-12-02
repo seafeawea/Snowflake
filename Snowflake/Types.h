@@ -2,6 +2,7 @@
 #define MUDUO_BASE_TYPES_H
 
 #include <stdint.h>
+#include "Global.h"
 #ifdef MUDUO_STD_STRING
 #include <string>
 #else  // !MUDUO_STD_STRING

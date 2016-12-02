@@ -6,9 +6,11 @@
 
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
+#include <boost/function.hpp>
 
 #include "Global.h"
 #include "Buffer.h"
+#include "Callbacks.h"
 
 #include <string>
 
@@ -19,10 +21,12 @@ using namespace muduo::net;
 
 namespace snowflake
 {
+	
+
 	class tcpconnection : boost::noncopyable, public boost::enable_shared_from_this<tcpconnection>
 	{
 	public:
-		tcpconnection();
+		tcpconnection(SockPtr socket);
 		~tcpconnection();
 
 		void send(const string& message);
@@ -36,21 +40,27 @@ namespace snowflake
 		}
 
 	private:
+		enum StateE { kDisconnected, kConnecting, kConnected, kDisconnecting };
+
+		StateE state_;  // FIXME: use atomic variable
 		SockPtr	socket_;
 		Buffer inputBuffer_;
 		Buffer outputBuffer_; 
 		char	asyncBuffer_[MAX_NETBUFFER_SIZE];
+		MessageCallback readCallback_;
 	};
 
-	tcpconnection::tcpconnection()
+	tcpconnection::tcpconnection(SockPtr socket):state_(kConnecting), socket_(socket)
 	{
 	}
 
 	tcpconnection::~tcpconnection()
 	{
+		assert(state_ == kDisconnected);
 	}
 
 	typedef boost::shared_ptr<tcpconnection> TcpConnectionPtr;
+
 }
 
 #endif

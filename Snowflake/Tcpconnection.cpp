@@ -4,5 +4,11 @@ void tcpconnection::socketAsyncReadHandle(const boost::system::error_code& ec, s
 {
 	if (ec == boost::asio::error::eof || ec == ((boost::asio::error::basic_errors)10054) || ec == ((boost::asio::error::basic_errors)10009) || ec == ((boost::asio::error::basic_errors)995))
 	{
+		return;
 	}
+
+	inputBuffer_.GetData(asyncBuffer_,  bytes_transferred);
+	readCallback_(shared_from_this(), &inputBuffer_);
+
+	asyncRead();
 }
