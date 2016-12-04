@@ -1,5 +1,5 @@
-#ifndef SNOWFLAKE_TCPCONNECTION_H
-#define SNOWFLAKE_TCPCONNECTION_H
+#ifndef SNOWFLAKE_TcpConnection_H
+#define SNOWFLAKE_TcpConnection_H
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/noncopyable.hpp>
@@ -23,23 +23,20 @@ namespace snowflake
 {
 	
 
-	class tcpconnection : boost::noncopyable, public boost::enable_shared_from_this<tcpconnection>
+	class TcpConnection : boost::noncopyable, public boost::enable_shared_from_this<TcpConnection>
 	{
 	public:
-		tcpconnection(SockPtr socket);
-		~tcpconnection();
+		TcpConnection(SockPtr socket, MessageCallback readcallback);
+		~TcpConnection();
 
 		void send(const string& message);
-		void socketAsyncReadHandle(const boost::system::error_code& error, std::size_t bytes_transferred);
-		void asyncRead() {
-			socket_->async_read_some(
-				boost::asio::buffer(this->asyncBuffer_, MAX_NETBUFFER_SIZE), 
-				boost::bind(&tcpconnection::socketAsyncReadHandle, shared_from_this(),
-					boost::asio::placeholders::error,
-					boost::asio::placeholders::bytes_transferred));
-		}
+		
+		void asyncRead();
 
 	private:
+		void TcpConnection::sendCallback(boost::system::error_code ec);
+		void socketAsyncReadHandle(const boost::system::error_code& error, std::size_t bytes_transferred);
+
 		enum StateE { kDisconnected, kConnecting, kConnected, kDisconnecting };
 
 		StateE state_;  // FIXME: use atomic variable
@@ -50,16 +47,9 @@ namespace snowflake
 		MessageCallback readCallback_;
 	};
 
-	tcpconnection::tcpconnection(SockPtr socket):state_(kConnecting), socket_(socket)
-	{
-	}
+	
 
-	tcpconnection::~tcpconnection()
-	{
-		assert(state_ == kDisconnected);
-	}
-
-	typedef boost::shared_ptr<tcpconnection> TcpConnectionPtr;
+	typedef boost::shared_ptr<TcpConnection> TcpConnectionPtr;
 
 }
 

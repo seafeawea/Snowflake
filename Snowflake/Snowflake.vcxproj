@@ -156,6 +156,7 @@
     <ClInclude Include="Global.h" />
     <ClInclude Include="StringPiece.h" />
     <ClInclude Include="Tcpconnection.h" />
+    <ClInclude Include="TcpConnectionPool.h" />
     <ClInclude Include="Types.h" />
   </ItemGroup>
   <ItemGroup>

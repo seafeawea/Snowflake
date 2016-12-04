@@ -7,9 +7,9 @@
 
 namespace snowflake
 {
-	class tcpconnection;
+	class TcpConnection;
 	
-	typedef boost::shared_ptr<tcpconnection> TcpConnectionPtr;
+	typedef boost::shared_ptr<TcpConnection> TcpConnectionPtr;
 	typedef boost::function<void(const TcpConnectionPtr&, muduo::net::Buffer*)> MessageCallback;
 }
 
